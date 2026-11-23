@@ -62,7 +62,15 @@ async function apiFetch<T>(
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json() as Promise<T>;
+}
+
+export function getCampaign(campaignId: string): Promise<Campaign> {
+  return apiFetch<Campaign>(`/api/v1/campaigns/${campaignId}`);
 }
 
 export function getCampaigns(): Promise<Campaign[]> {
@@ -133,5 +141,77 @@ export interface ProfitOverTimeResponse {
 export function getProfitOverTime(): Promise<ProfitOverTimeResponse> {
   return apiFetch<ProfitOverTimeResponse>(
     "/api/v1/analytics/profit-over-time/"
+  );
+}
+
+
+export interface CampaignStat {
+  id: string;
+  campaign_id: string;
+  stat_date: string;
+  impressions: number;
+  clicks: number;
+  leads: number;
+  conversions: number;
+  spend: number | string;
+  revenue: number | string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type CampaignStatCreate = {
+  stat_date: string;
+  impressions?: number;
+  clicks?: number;
+  leads?: number;
+  conversions?: number;
+  spend?: number;
+  revenue?: number;
+};
+
+export type CampaignStatUpdate = Partial<CampaignStatCreate>;
+
+export function getCampaignStats(campaignId: string): Promise<CampaignStat[]> {
+  return apiFetch<CampaignStat[]>(
+    `/api/v1/campaigns/${campaignId}/stats/`
+  );
+}
+
+export function createCampaignStat(
+  campaignId: string,
+  data: CampaignStatCreate
+): Promise<CampaignStat> {
+  return apiFetch<CampaignStat>(
+    `/api/v1/campaigns/${campaignId}/stats/`,
+    {
+      method: "POST",
+      body: JSON.stringify(data),
+    }
+  );
+}
+
+export function updateCampaignStat(
+  campaignId: string,
+  statId: string,
+  data: CampaignStatUpdate
+): Promise<CampaignStat> {
+  return apiFetch<CampaignStat>(
+    `/api/v1/campaigns/${campaignId}/stats/${statId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }
+  );
+}
+
+export async function deleteCampaignStat(
+  campaignId: string,
+  statId: string
+): Promise<void> {
+  await apiFetch<void>(
+    `/api/v1/campaigns/${campaignId}/stats/${statId}`,
+    {
+      method: "DELETE",
+    }
   );
 }

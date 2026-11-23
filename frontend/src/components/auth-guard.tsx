@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated" | "error";
 
-export default function AuthGuard({
+function AuthGuardContent({
   children,
 }: {
   children: React.ReactNode;
@@ -99,4 +100,28 @@ export default function AuthGuard({
   }
 
   return <>{children}</>;
+}
+
+
+export default function AuthGuard({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-[#0b0b0d]">
+          <div className="text-center">
+            <div className="mx-auto h-9 w-9 animate-spin rounded-full border-2 border-[#333338] border-t-[#ff8a00]" />
+            <p className="mt-4 text-sm text-[#92929a]">
+              Loading FLY Analytics...
+            </p>
+          </div>
+        </main>
+      }
+    >
+      <AuthGuardContent>{children}</AuthGuardContent>
+    </Suspense>
+  );
 }

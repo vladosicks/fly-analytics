@@ -361,16 +361,16 @@ export default function AnalyticsPage() {
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
                                   <p className="text-xs text-[#92929a]">Spend</p>
-                                  <p className="mt-1 font-medium">{item ? money(number(item.spend), campaign.currency) : "N/A"}</p>
+                                  <p className="mt-1 font-medium">{money(number(item?.spend), campaign.currency)}</p>
                                 </div>
                                 <div>
                                   <p className="text-xs text-[#92929a]">Revenue</p>
-                                  <p className="mt-1 font-medium">{item ? money(number(item.revenue), campaign.currency) : "N/A"}</p>
+                                  <p className="mt-1 font-medium">{money(number(item?.revenue), campaign.currency)}</p>
                                 </div>
                                 <div>
                                   <p className="text-xs text-[#92929a]">Profit</p>
-                                  <p className={`mt-1 font-medium ${item && number(item.profit) >= 0 ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
-                                    {item ? money(number(item.profit), campaign.currency) : "N/A"}
+                                  <p className={`mt-1 font-medium ${number(item?.profit) >= 0 ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
+                                    {money(number(item?.profit), campaign.currency)}
                                   </p>
                                 </div>
                                 <div>
@@ -409,9 +409,9 @@ export default function AnalyticsPage() {
                                 <tr key={campaign.id}>
                                   <td className="px-3 py-4 font-medium">{campaign.name}</td>
                                   <td className="px-3 py-4 text-[#92929a]">{campaign.geo}</td>
-                                  <td className="px-3 py-4">{item ? money(number(item.spend), campaign.currency) : "N/A"}</td>
-                                  <td className="px-3 py-4">{item ? money(number(item.revenue), campaign.currency) : "N/A"}</td>
-                                  <td className={`px-3 py-4 ${item && number(item.profit) >= 0 ? "text-[#22c55e]" : "text-[#ef4444]"}`}>{item ? money(number(item.profit), campaign.currency) : "N/A"}</td>
+                                  <td className="px-3 py-4">{money(number(item?.spend), campaign.currency)}</td>
+                                  <td className="px-3 py-4">{money(number(item?.revenue), campaign.currency)}</td>
+                                  <td className={`px-3 py-4 ${number(item?.profit) >= 0 ? "text-[#22c55e]" : "text-[#ef4444]"}`}>{money(number(item?.profit), campaign.currency)}</td>
                                   <td className="px-3 py-4">{item ? metric(item.roi, "%") : "N/A"}</td>
                                   <td className="px-3 py-4">{item ? metric(item.roas, "x") : "N/A"}</td>
                                 </tr>

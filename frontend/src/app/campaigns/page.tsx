@@ -1,6 +1,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import UserMenu from "@/components/user-menu";
 import {
@@ -306,6 +307,12 @@ export default function CampaignsPage() {
                                         </div>
 
                                         <div className="mt-4 flex gap-4 border-t border-[#29292e] pt-3">
+                                            <Link
+                                                href={`/campaigns/${campaign.id}`}
+                                                className="text-xs font-medium text-[#ff9b26] hover:text-[#ffb45e]"
+                                            >
+                                                Open
+                                            </Link>
                                             <button
                                                 onClick={() => openEditModal(campaign)}
                                                 className="text-xs font-medium text-[#ff9b26] hover:text-[#ffb45e]"
@@ -371,6 +378,12 @@ export default function CampaignsPage() {
                                                         </span>
                                                     </td>
                                                     <td className="px-5 py-4 text-right">
+                                                        <Link
+                                                            href={`/campaigns/${campaign.id}`}
+                                                            className="mr-3 text-xs font-medium text-[#ff9b26] hover:text-[#ffb45e]"
+                                                        >
+                                                            Open
+                                                        </Link>
                                                         <button
                                                             onClick={() => openEditModal(campaign)}
                                                             className="mr-3 text-xs font-medium text-[#ff9b26] hover:text-[#ffb45e]"
