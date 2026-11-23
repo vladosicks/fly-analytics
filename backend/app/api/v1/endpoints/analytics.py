@@ -1,4 +1,3 @@
-
 import uuid
 from datetime import date, timedelta
 
@@ -12,7 +11,6 @@ from app.models.campaign import Campaign
 from app.models.campaign_stat import CampaignStat
 from app.services.analytics import calculate_analytics
 
-
 router = APIRouter(
     prefix="/campaigns/{campaign_id}/analytics",
     tags=["Analytics"],
@@ -22,8 +20,6 @@ dashboard_router = APIRouter(
     prefix="/analytics",
     tags=["Dashboard Analytics"],
 )
-
-
 
 
 @router.get("/")
@@ -52,9 +48,7 @@ async def get_campaign_analytics(
         func.coalesce(func.sum(CampaignStat.conversions), 0),
         func.coalesce(func.sum(CampaignStat.spend), 0),
         func.coalesce(func.sum(CampaignStat.revenue), 0),
-    ).where(
-        CampaignStat.campaign_id == campaign_id
-    )
+    ).where(CampaignStat.campaign_id == campaign_id)
 
     result = await db.execute(stats_query)
     row = result.one()
@@ -72,6 +66,7 @@ async def get_campaign_analytics(
         "campaign_id": str(campaign_id),
         "metrics": analytics,
     }
+
 
 @dashboard_router.get("/profit-over-time/")
 async def get_profit_over_time(
@@ -103,11 +98,13 @@ async def get_profit_over_time(
         spend = row.spend
         revenue = row.revenue
 
-        data.append({
-            "date": row.stat_date.isoformat(),
-            "spend": spend,
-            "revenue": revenue,
-            "profit": revenue - spend,
-        })
+        data.append(
+            {
+                "date": row.stat_date.isoformat(),
+                "spend": spend,
+                "revenue": revenue,
+                "profit": revenue - spend,
+            }
+        )
 
     return {"data": data}

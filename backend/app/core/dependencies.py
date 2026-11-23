@@ -10,7 +10,6 @@ from app.core.database import get_db
 from app.core.security import decode_access_token
 from app.models.user import User
 
-
 security = HTTPBearer(auto_error=False)
 
 
@@ -32,9 +31,7 @@ async def get_current_user(
     except (jwt.InvalidTokenError, ValueError):
         raise unauthorized
 
-    result = await db.scalar(
-        select(User).where(User.id == user_id)
-    )
+    result = await db.scalar(select(User).where(User.id == user_id))
 
     if result is None or not result.is_active:
         raise unauthorized

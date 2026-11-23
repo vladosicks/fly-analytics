@@ -1,11 +1,9 @@
-
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
-
-ZERO = Decimal("0")
-HUNDRED = Decimal("100")
-THOUSAND = Decimal("1000")
+ZERO = Decimal(0)
+HUNDRED = Decimal(100)
+THOUSAND = Decimal(1000)
 TWO_PLACES = Decimal("0.01")
 FOUR_PLACES = Decimal("0.0001")
 

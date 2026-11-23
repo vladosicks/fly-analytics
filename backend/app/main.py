@@ -1,14 +1,15 @@
-
 from fastapi import FastAPI
-from app.api.v1.endpoints.auth import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1.endpoints.campaigns import router as campaigns_router
-from app.api.v1.endpoints.campaign_stats import router as campaign_stats_router
 from app.api.v1.endpoints.analytics import (
-    router as analytics_router,
     dashboard_router,
 )
+from app.api.v1.endpoints.analytics import (
+    router as analytics_router,
+)
+from app.api.v1.endpoints.auth import router as auth_router
+from app.api.v1.endpoints.campaign_stats import router as campaign_stats_router
+from app.api.v1.endpoints.campaigns import router as campaigns_router
 
 app = FastAPI(
     title="FLY Analytics API",

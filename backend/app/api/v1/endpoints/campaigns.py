@@ -1,4 +1,3 @@
-
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -6,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_user_id
-from app.models.campaign import Campaign
 from app.schemas.campaign import (
     CampaignCreate,
     CampaignResponse,
@@ -21,8 +19,6 @@ from app.services.campaign import (
 )
 
 router = APIRouter(prefix="/campaigns", tags=["Campaigns"])
-
-
 
 
 @router.post(

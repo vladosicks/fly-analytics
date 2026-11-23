@@ -1,4 +1,3 @@
-
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
@@ -10,7 +9,6 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Numeric,
-    String,
     UniqueConstraint,
     func,
 )

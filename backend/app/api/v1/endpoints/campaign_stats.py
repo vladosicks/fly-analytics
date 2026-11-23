@@ -1,4 +1,3 @@
-
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -9,20 +8,18 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_user_id
 from app.schemas.campaign_stat import (
     CampaignStatCreate,
-    CampaignStatUpdate,
     CampaignStatResponse,
+    CampaignStatUpdate,
 )
 from app.services.campaign_stat import (
     create_campaign_stat,
-    get_campaign_stats,
-    get_campaign_stat,
-    update_campaign_stat,
     delete_campaign_stat,
+    get_campaign_stat,
+    get_campaign_stats,
+    update_campaign_stat,
 )
 
 router = APIRouter(prefix="/campaigns/{campaign_id}/stats", tags=["Campaign Stats"])
-
-
 
 
 @router.post(

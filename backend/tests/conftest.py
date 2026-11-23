@@ -8,10 +8,7 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.main import app
 
-
-TEST_DATABASE_URL = make_url(settings.DATABASE_URL).set(
-    database="fly_analytics_test"
-)
+TEST_DATABASE_URL = make_url(settings.DATABASE_URL).set(database="fly_analytics_test")
 
 test_engine = create_async_engine(
     TEST_DATABASE_URL,

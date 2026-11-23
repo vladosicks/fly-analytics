@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import UserMenu from "@/components/user-menu";
 import {
     getCampaigns,
     createCampaign,
@@ -178,9 +179,7 @@ export default function CampaignsPage() {
                             <p className="text-xs text-[#77777f]">Workspace / Campaigns</p>
                             <h1 className="mt-1 text-lg font-semibold">Campaign Management</h1>
                         </div>
-                        <span className="rounded-lg border border-[#29292e] bg-[#19191c] px-4 py-2 text-xs text-[#92929a]">
-                            FLY Analytics
-                        </span>
+                        <UserMenu />
                     </header>
 
                     <div className="mx-auto max-w-[1500px] p-5 sm:p-8">

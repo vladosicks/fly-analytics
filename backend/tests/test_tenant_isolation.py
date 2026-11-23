@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+
 import pytest_asyncio
 
 from app.core.security import create_access_token
@@ -104,7 +105,9 @@ async def test_user_cannot_update_another_users_campaign(client, tenant_data):
     assert response.json()["detail"] == "Campaign not found"
 
 
-async def test_user_cannot_delete_another_users_campaign(client, tenant_data, db_session):
+async def test_user_cannot_delete_another_users_campaign(
+    client, tenant_data, db_session
+):
     response = await client.delete(
         f"/api/v1/campaigns/{tenant_data['campaign_a'].id}",
         headers={"Authorization": f"Bearer {tenant_data['token_b']}"},
@@ -113,14 +116,12 @@ async def test_user_cannot_delete_another_users_campaign(client, tenant_data, db
     assert response.status_code == 404
     assert response.json()["detail"] == "Campaign not found"
 
-    campaign = await db_session.get(Campaign, tenant_data['campaign_a'].id)
+    campaign = await db_session.get(Campaign, tenant_data["campaign_a"].id)
     assert campaign is not None
     assert campaign.name == "Campaign A"
 
 
-async def test_user_cannot_create_stats_for_another_users_campaign(
-    client, tenant_data
-):
+async def test_user_cannot_create_stats_for_another_users_campaign(client, tenant_data):
     response = await client.post(
         f"/api/v1/campaigns/{tenant_data['campaign_a'].id}/stats/",
         headers={"Authorization": f"Bearer {tenant_data['token_b']}"},
@@ -139,7 +140,6 @@ async def test_user_cannot_create_stats_for_another_users_campaign(
     assert response.json()["detail"] == "Campaign not found."
 
 
-
 async def test_user_cannot_list_stats_for_another_users_campaign(client, tenant_data):
     response = await client.get(
         f"/api/v1/campaigns/{tenant_data['campaign_a'].id}/stats/",
@@ -148,7 +148,6 @@ async def test_user_cannot_list_stats_for_another_users_campaign(client, tenant_
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Campaign not found."
-
 
 
 async def test_user_cannot_get_another_users_stat(client, tenant_data):

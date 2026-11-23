@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import UserMenu from "@/components/user-menu";
 import {
   getCampaigns,
   getCampaignAnalytics,
@@ -291,9 +292,7 @@ export default function Home() {
               <div className="hidden rounded-lg border border-[#29292e] bg-[#151518] px-3 py-2 text-xs text-[#92929a] sm:block">
                 November 2026
               </div>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#333338] bg-[#19191c] text-sm font-semibold">
-                V
-              </div>
+              <UserMenu />
             </div>
           </header>
 

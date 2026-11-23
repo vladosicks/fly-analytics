@@ -1,3 +1,5 @@
+import { cookies } from "next/headers";
+
 const BACKEND_URL =
   process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8000";
 
@@ -10,12 +12,21 @@ async function proxyRequest(
     const endpoint = path.join("/");
     const url = `${BACKEND_URL}/${endpoint}${new URL(request.url).search}`;
 
+    const cookieStore = await cookies();
+    const token = cookieStore.get("fly_access_token")?.value;
+
+    const headers: Record<string, string> = {
+      "Content-Type":
+        request.headers.get("content-type") || "application/json",
+    };
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const response = await fetch(url, {
       method: request.method,
-      headers: {
-        "Content-Type":
-          request.headers.get("content-type") || "application/json",
-      },
+      headers,
       body:
         request.method === "GET" || request.method === "HEAD"
           ? undefined
