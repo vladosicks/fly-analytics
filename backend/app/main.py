@@ -2,6 +2,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1.endpoints.campaigns import router as campaigns_router
+from app.api.v1.endpoints.campaign_stats import router as campaign_stats_router
+from app.api.v1.endpoints.analytics import (
+    router as analytics_router,
+    dashboard_router,
+)
+
 app = FastAPI(
     title="FLY Analytics API",
     description="Analytics platform for media buyers",
@@ -11,10 +18,16 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
+    allow_origin_regex=r"^https://.*\.app\.github\.dev$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(campaigns_router, prefix="/api/v1")
+app.include_router(campaign_stats_router, prefix="/api/v1")
+app.include_router(analytics_router, prefix="/api/v1")
+app.include_router(dashboard_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["Health"])
