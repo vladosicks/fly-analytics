@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.dependencies import get_current_user_id
 from app.schemas.campaign_stat import (
     CampaignStatCreate,
     CampaignStatUpdate,
@@ -22,10 +23,6 @@ from app.services.campaign_stat import (
 router = APIRouter(prefix="/campaigns/{campaign_id}/stats", tags=["Campaign Stats"])
 
 
-async def get_current_user_id() -> uuid.UUID:
-    # Temporary test authentication.
-    # Replace with real authentication before production.
-    return uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 
 @router.post(

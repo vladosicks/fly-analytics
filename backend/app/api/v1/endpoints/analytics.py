@@ -7,6 +7,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.dependencies import get_current_user_id
 from app.models.campaign import Campaign
 from app.models.campaign_stat import CampaignStat
 from app.services.analytics import calculate_analytics
@@ -23,10 +24,6 @@ dashboard_router = APIRouter(
 )
 
 
-async def get_current_user_id() -> uuid.UUID:
-    # Temporary test authentication.
-    # Replace with real authentication before production.
-    return uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 
 @router.get("/")

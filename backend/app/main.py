@@ -1,5 +1,6 @@
 
 from fastapi import FastAPI
+from app.api.v1.endpoints.auth import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.endpoints.campaigns import router as campaigns_router
@@ -24,6 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router, prefix="/api/v1")
 app.include_router(campaigns_router, prefix="/api/v1")
 app.include_router(campaign_stats_router, prefix="/api/v1")
 app.include_router(analytics_router, prefix="/api/v1")
