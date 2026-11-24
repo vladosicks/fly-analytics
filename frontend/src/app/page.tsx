@@ -16,7 +16,7 @@ const navigation = [
   { label: "Overview", icon: "◫", href: "/", active: true },
   { label: "Campaigns", icon: "▤", href: "/campaigns", active: false },
   { label: "Analytics", icon: "⌁", href: "/analytics", active: false },
-  { label: "GEO Performance", icon: "◎", href: null, active: false },
+  { label: "GEO Performance", icon: "◎", href: "/geo-performance", active: false },
   { label: "Financial Reports", icon: "▥", href: null, active: false },
 ];
 
@@ -164,9 +164,9 @@ export default function Home() {
     hasMixedCurrencies
       ? "Multiple currencies"
       : new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency,
-        }).format(value);
+        style: "currency",
+        currency,
+      }).format(value);
 
   const chartValues = hasMixedCurrencies
     ? []

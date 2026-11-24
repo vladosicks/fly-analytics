@@ -164,7 +164,7 @@ export default function CampaignsPage() {
                             <a href="/#analytics" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                                 ⌁ Analytics
                             </a>
-                            <a href="/#geo" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+                            <a href="/geo-performance" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                                 ◎ GEO Performance
                             </a>
                             <a href="/#reports" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">

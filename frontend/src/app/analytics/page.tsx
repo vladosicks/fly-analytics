@@ -171,7 +171,7 @@ export default function AnalyticsPage() {
               <a href="/" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">◫ Overview</a>
               <a href="/campaigns" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">▤ Campaigns</a>
               <a href="/analytics" className="block rounded-lg border border-[#ff8a00]/30 bg-[#ff8a00]/10 px-4 py-3 text-sm text-[#ff9b26]">⌁ Analytics</a>
-              <a href="/#geo" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">◎ GEO Performance</a>
+              <a href="/geo-performance" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">◎ GEO Performance</a>
               <a href="/#reports" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">▥ Financial Reports</a>
             </nav>
           </div>

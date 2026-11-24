@@ -2,7 +2,7 @@ import uuid
 from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -108,3 +108,83 @@ async def get_profit_over_time(
         )
 
     return {"data": data}
+
+
+@dashboard_router.get("/geo-performance/")
+async def get_geo_performance(
+    date_from: date | None = None,
+    date_to: date | None = None,
+    db: AsyncSession = Depends(get_db),
+    user_id: uuid.UUID = Depends(get_current_user_id),
+):
+    if date_from and date_to and date_from > date_to:
+        raise HTTPException(
+            status_code=422,
+            detail="date_from cannot be later than date_to",
+        )
+
+    join_condition = Campaign.id == CampaignStat.campaign_id
+
+    if date_from:
+        join_condition = and_(
+            join_condition,
+            CampaignStat.stat_date >= date_from,
+        )
+
+    if date_to:
+        join_condition = and_(
+            join_condition,
+            CampaignStat.stat_date <= date_to,
+        )
+
+    geo_expression = func.coalesce(
+        func.nullif(func.trim(Campaign.geo), ""),
+        "Unknown",
+    )
+
+    query = (
+        select(
+            geo_expression.label("geo"),
+            Campaign.currency.label("currency"),
+            func.count(func.distinct(Campaign.id)).label("campaign_count"),
+            func.coalesce(func.sum(CampaignStat.impressions), 0).label("impressions"),
+            func.coalesce(func.sum(CampaignStat.clicks), 0).label("clicks"),
+            func.coalesce(func.sum(CampaignStat.leads), 0).label("leads"),
+            func.coalesce(func.sum(CampaignStat.conversions), 0).label("conversions"),
+            func.coalesce(func.sum(CampaignStat.spend), 0).label("spend"),
+            func.coalesce(func.sum(CampaignStat.revenue), 0).label("revenue"),
+        )
+        .outerjoin(CampaignStat, join_condition)
+        .where(Campaign.user_id == user_id)
+        .group_by(geo_expression, Campaign.currency)
+        .order_by(geo_expression, Campaign.currency)
+    )
+
+    result = await db.execute(query)
+
+    data = []
+
+    for row in result.all():
+        metrics = calculate_analytics(
+            impressions=int(row.impressions),
+            clicks=int(row.clicks),
+            leads=int(row.leads),
+            conversions=int(row.conversions),
+            spend=row.spend,
+            revenue=row.revenue,
+        )
+
+        data.append(
+            {
+                "geo": row.geo,
+                "currency": row.currency,
+                "campaign_count": row.campaign_count,
+                **metrics,
+            }
+        )
+
+    return {
+        "date_from": date_from.isoformat() if date_from else None,
+        "date_to": date_to.isoformat() if date_to else None,
+        "data": data,
+    }

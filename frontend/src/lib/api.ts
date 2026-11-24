@@ -144,6 +144,43 @@ export function getProfitOverTime(): Promise<ProfitOverTimeResponse> {
   );
 }
 
+export function getGeoPerformance(
+  filters: GeoPerformanceFilters = {}
+): Promise<GeoPerformanceResponse> {
+  const params = new URLSearchParams();
+
+  if (filters.date_from) {
+    params.set("date_from", filters.date_from);
+  }
+
+  if (filters.date_to) {
+    params.set("date_to", filters.date_to);
+  }
+
+  const query = params.toString();
+
+  return apiFetch<GeoPerformanceResponse>(
+    `/api/v1/analytics/geo-performance/${query ? `?${query}` : ""}`
+  );
+}
+
+export interface GeoPerformancePoint extends AnalyticsMetrics {
+  geo: string;
+  currency: string;
+  campaign_count: number;
+}
+
+export interface GeoPerformanceResponse {
+  date_from: string | null;
+  date_to: string | null;
+  data: GeoPerformancePoint[];
+}
+
+export interface GeoPerformanceFilters {
+  date_from?: string;
+  date_to?: string;
+}
+
 
 export interface CampaignStat {
   id: string;
