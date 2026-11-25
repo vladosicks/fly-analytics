@@ -49,6 +49,7 @@ export default function CampaignsPage() {
     }
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         loadCampaigns();
     }, []);
 
@@ -155,21 +156,21 @@ export default function CampaignsPage() {
                             WORKSPACE
                         </p>
                         <nav className="space-y-2">
-                            <a href="/" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+                            <Link href="/" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                                 ◫ Overview
-                            </a>
-                            <a href="/campaigns" className="block rounded-lg border border-[#ff8a00]/30 bg-[#ff8a00]/10 px-4 py-3 text-sm text-[#ff9b26]">
+                            </Link>
+                            <Link href="/campaigns" className="block rounded-lg border border-[#ff8a00]/30 bg-[#ff8a00]/10 px-4 py-3 text-sm text-[#ff9b26]">
                                 ▤ Campaigns
-                            </a>
-                            <a href="/#analytics" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+                            </Link>
+                            <Link href="/analytics" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                                 ⌁ Analytics
-                            </a>
-                            <a href="/geo-performance" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+                            </Link>
+                            <Link href="/geo-performance" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                                 ◎ GEO Performance
-                            </a>
-                            <a href="/#reports" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+                            </Link>
+                            <Link href="/financial-reports" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                                 ▥ Financial Reports
-                            </a>
+                            </Link>
                         </nav>
                     </div>
                 </aside>

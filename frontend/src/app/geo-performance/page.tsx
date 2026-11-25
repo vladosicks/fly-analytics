@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import UserMenu from "@/components/user-menu";
 import {
@@ -91,8 +92,6 @@ export default function GeoPerformancePage() {
     }
 
     if (dateFrom && dateTo && dateFrom > dateTo) {
-      setError("Start date cannot be later than end date.");
-      setLoading(false);
       return;
     }
 
@@ -146,11 +145,6 @@ export default function GeoPerformancePage() {
   const roi =
     !hasMixedCurrencies && totals.spend > 0
       ? (totals.profit / totals.spend) * 100
-      : null;
-
-  const roas =
-    !hasMixedCurrencies && totals.spend > 0
-      ? totals.revenue / totals.spend
       : null;
 
   const currency =
@@ -239,21 +233,21 @@ export default function GeoPerformancePage() {
               WORKSPACE
             </p>
             <nav className="space-y-2">
-              <a href="/" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+              <Link href="/" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                 ◫ Overview
-              </a>
-              <a href="/campaigns" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+              </Link>
+              <Link href="/campaigns" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                 ▤ Campaigns
-              </a>
-              <a href="/analytics" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+              </Link>
+              <Link href="/analytics" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                 ⌁ Analytics
-              </a>
-              <a href="/geo-performance" className="block rounded-lg border border-[#ff8a00]/30 bg-[#ff8a00]/10 px-4 py-3 text-sm text-[#ff9b26]">
+              </Link>
+              <Link href="/geo-performance" className="block rounded-lg border border-[#ff8a00]/30 bg-[#ff8a00]/10 px-4 py-3 text-sm text-[#ff9b26]">
                 ◎ GEO Performance
-              </a>
-              <a href="/#reports" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+              </Link>
+              <Link href="/financial-reports" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                 ▥ Financial Reports
-              </a>
+              </Link>
             </nav>
           </div>
         </aside>

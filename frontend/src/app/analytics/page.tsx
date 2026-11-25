@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import UserMenu from "@/components/user-menu";
 import {
@@ -168,11 +169,11 @@ export default function AnalyticsPage() {
           <div className="p-5">
             <p className="mb-4 text-[10px] font-semibold tracking-[3px] text-[#77777f]">WORKSPACE</p>
             <nav className="space-y-2">
-              <a href="/" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">◫ Overview</a>
-              <a href="/campaigns" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">▤ Campaigns</a>
-              <a href="/analytics" className="block rounded-lg border border-[#ff8a00]/30 bg-[#ff8a00]/10 px-4 py-3 text-sm text-[#ff9b26]">⌁ Analytics</a>
-              <a href="/geo-performance" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">◎ GEO Performance</a>
-              <a href="/#reports" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">▥ Financial Reports</a>
+              <Link href="/" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">◫ Overview</Link>
+              <Link href="/campaigns" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">▤ Campaigns</Link>
+              <Link href="/analytics" className="block rounded-lg border border-[#ff8a00]/30 bg-[#ff8a00]/10 px-4 py-3 text-sm text-[#ff9b26]">⌁ Analytics</Link>
+              <Link href="/geo-performance" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">◎ GEO Performance</Link>
+              <Link href="/financial-reports" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">▥ Financial Reports</Link>
             </nav>
           </div>
         </aside>

@@ -17,8 +17,7 @@ const navigation = [
   { label: "Campaigns", icon: "▤", href: "/campaigns", active: false },
   { label: "Analytics", icon: "⌁", href: "/analytics", active: false },
   { label: "GEO Performance", icon: "◎", href: "/geo-performance", active: false },
-  { label: "Financial Reports", icon: "▥", href: null, active: false },
-];
+  { label: "Financial Reports", icon: "▥", href: "/financial-reports", active: false },];
 
 const campaigns = [
   { name: "Nutra | Germany", network: "Meta Ads", geo: "DE", spend: "$1,240.00", revenue: "$2,180.00", profit: "+$940.00", roi: "75.8%", status: "Active" },

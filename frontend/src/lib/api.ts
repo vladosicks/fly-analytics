@@ -164,6 +164,90 @@ export function getGeoPerformance(
   );
 }
 
+
+export interface FinancialReportFilters {
+  date_from?: string;
+  date_to?: string;
+  currency?: string;
+}
+
+export interface FinancialSummaryPoint extends AnalyticsMetrics {
+  currency: string;
+  campaign_count: number;
+}
+
+export interface FinancialSummaryResponse {
+  date_from: string | null;
+  date_to: string | null;
+  data: FinancialSummaryPoint[];
+}
+
+export interface DailyFinancialPoint {
+  date: string;
+  currency: string;
+  spend: number | string;
+  revenue: number | string;
+  profit: number | string;
+}
+
+export interface DailyFinancialResponse {
+  date_from: string | null;
+  date_to: string | null;
+  data: DailyFinancialPoint[];
+}
+
+export interface CampaignFinancialPoint extends AnalyticsMetrics {
+  campaign_id: string;
+  campaign_name: string;
+  traffic_source: string | null;
+  offer_name: string | null;
+  geo: string | null;
+  status: string;
+  currency: string;
+}
+
+export interface CampaignFinancialResponse {
+  date_from: string | null;
+  date_to: string | null;
+  data: CampaignFinancialPoint[];
+}
+
+function financialReportQuery(filters: FinancialReportFilters = {}): string {
+  const params = new URLSearchParams();
+
+  if (filters.date_from) params.set("date_from", filters.date_from);
+  if (filters.date_to) params.set("date_to", filters.date_to);
+  if (filters.currency) params.set("currency", filters.currency);
+
+  const query = params.toString();
+  return query ? `?${query}` : "";
+}
+
+export function getFinancialSummary(
+  filters: FinancialReportFilters = {}
+): Promise<FinancialSummaryResponse> {
+  return apiFetch<FinancialSummaryResponse>(
+    `/api/v1/financial-reports/summary/${financialReportQuery(filters)}`
+  );
+}
+
+export function getDailyFinancialReport(
+  filters: FinancialReportFilters = {}
+): Promise<DailyFinancialResponse> {
+  return apiFetch<DailyFinancialResponse>(
+    `/api/v1/financial-reports/daily/${financialReportQuery(filters)}`
+  );
+}
+
+export function getCampaignFinancialReport(
+  filters: FinancialReportFilters = {}
+): Promise<CampaignFinancialResponse> {
+  return apiFetch<CampaignFinancialResponse>(
+    `/api/v1/financial-reports/campaigns/${financialReportQuery(filters)}`
+  );
+}
+
+
 export interface GeoPerformancePoint extends AnalyticsMetrics {
   geo: string;
   currency: string;

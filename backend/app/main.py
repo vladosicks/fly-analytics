@@ -10,6 +10,7 @@ from app.api.v1.endpoints.analytics import (
 from app.api.v1.endpoints.auth import router as auth_router
 from app.api.v1.endpoints.campaign_stats import router as campaign_stats_router
 from app.api.v1.endpoints.campaigns import router as campaigns_router
+from app.api.v1.endpoints.financial_reports import router as financial_reports_router
 
 app = FastAPI(
     title="FLY Analytics API",
@@ -31,6 +32,7 @@ app.include_router(campaigns_router, prefix="/api/v1")
 app.include_router(campaign_stats_router, prefix="/api/v1")
 app.include_router(analytics_router, prefix="/api/v1")
 app.include_router(dashboard_router, prefix="/api/v1")
+app.include_router(financial_reports_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["Health"])
