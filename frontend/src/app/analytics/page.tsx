@@ -7,6 +7,8 @@ import {
   getCampaigns,
   getCampaignAnalytics,
   getProfitOverTime,
+  getPeriodComparison,
+  type PeriodComparisonResponse,
   type Campaign,
   type AnalyticsMetrics,
   type ProfitOverTimePoint,
@@ -48,6 +50,11 @@ export default function AnalyticsPage() {
   const [chartData, setChartData] = useState<ProfitOverTimePoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [comparisonFrom, setComparisonFrom] = useState("");
+  const [comparisonTo, setComparisonTo] = useState("");
+  const [comparison, setComparison] = useState<PeriodComparisonResponse | null>(null);
+  const [comparisonLoading, setComparisonLoading] = useState(false);
+  const [comparisonError, setComparisonError] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -82,6 +89,39 @@ export default function AnalyticsPage() {
 
     load();
   }, []);
+
+  useEffect(() => {
+    if (!comparisonFrom || !comparisonTo || comparisonFrom > comparisonTo) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadComparison() {
+      setComparisonLoading(true);
+      setComparisonError("");
+
+      try {
+        const result = await getPeriodComparison(comparisonFrom, comparisonTo);
+        if (!cancelled) setComparison(result);
+      } catch (err) {
+        if (!cancelled) {
+          setComparison(null);
+          setComparisonError(
+            err instanceof Error ? err.message : "Failed to load period comparison"
+          );
+        }
+      } finally {
+        if (!cancelled) setComparisonLoading(false);
+      }
+    }
+
+    loadComparison();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [comparisonFrom, comparisonTo]);
 
   const visibleCampaigns = useMemo(
     () => selectedCampaign === "all"
@@ -243,6 +283,155 @@ export default function AnalyticsPage() {
                 </div>
 
                 <div className="mb-5 rounded-xl border border-[#29292e] bg-[#151518] p-5">
+                  <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-semibold">Period Comparison</h3>
+                      <p className="mt-1 text-xs text-[#92929a]">
+                        Compare performance with the previous period of equal length
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <input
+                        type="date"
+                        value={comparisonFrom}
+                        onChange={(event) => setComparisonFrom(event.target.value)}
+                        className="rounded-lg border border-[#333338] bg-[#151518] px-3 py-2 text-sm"
+                      />
+                      <input
+                        type="date"
+                        value={comparisonTo}
+                        onChange={(event) => setComparisonTo(event.target.value)}
+                        className="rounded-lg border border-[#333338] bg-[#151518] px-3 py-2 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  {comparisonLoading && (
+                    <p className="py-4 text-sm text-[#92929a]">Loading comparison...</p>
+                  )}
+
+                  {comparisonError && (
+                    <p className="py-4 text-sm text-red-400">{comparisonError}</p>
+                  )}
+
+                  {!comparisonFrom || !comparisonTo ? (
+                    <p className="py-4 text-sm text-[#92929a]">
+                      Select a date range to compare performance.
+                    </p>
+                  ) : comparisonFrom > comparisonTo ? (
+                    <p className="py-4 text-sm text-red-400">
+                      Start date must be before or equal to end date.
+                    </p>
+                  ) : comparison && !comparisonLoading ? (
+                    <div className="space-y-5">
+                      <p className="text-xs text-[#92929a]">
+                        Current: {comparison.date_from} – {comparison.date_to}
+                        {" · "}
+                        Previous: {comparison.previous_date_from} – {comparison.previous_date_to}
+                      </p>
+
+                      {comparison.data.map((currencyData) => {
+                        const rows = [
+                          ["Revenue", "revenue"],
+                          ["Spend", "spend"],
+                          ["Profit", "profit"],
+                          ["ROI", "roi"],
+                          ["ROAS", "roas"],
+                          ["Impressions", "impressions"],
+                          ["Clicks", "clicks"],
+                          ["Leads", "leads"],
+                          ["Conversions", "conversions"],
+                          ["CTR", "ctr"],
+                          ["CPM", "cpm"],
+                          ["CPC", "cpc"],
+                          ["CPL", "cpl"],
+                          ["CPA", "cpa"],
+                          ["CR", "cr"],
+                          ["EPC", "epc"],
+                        ] as const;
+
+                        return (
+                          <div key={currencyData.currency} className="overflow-x-auto">
+                            <h4 className="mb-3 text-sm font-semibold">
+                              {currencyData.currency}
+                            </h4>
+                            <table className="w-full min-w-[600px] text-sm">
+                              <thead>
+                                <tr className="border-b border-[#29292e] text-left text-xs text-[#92929a]">
+                                  <th className="px-3 py-3">Metric</th>
+                                  <th className="px-3 py-3">Current</th>
+                                  <th className="px-3 py-3">Previous</th>
+                                  <th className="px-3 py-3">Change</th>
+                                  <th className="px-3 py-3">Change %</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {rows.map(([label, key]) => {
+                                  const current = currencyData.current[key];
+                                  const previous = currencyData.previous[key];
+                                  const change = currencyData.changes[key];
+                                  const isPercentMetric = ["roi", "ctr", "cr"].includes(key);
+                                  const isRatioMetric = key === "roas";
+                                  const isMoneyMetric = [
+                                    "revenue", "spend", "profit", "cpm", "cpc",
+                                    "cpl", "cpa", "epc"
+                                  ].includes(key);
+
+                                  const formatValue = (value: number | null) => {
+                                    if (value === null || value === undefined) return "N/A";
+                                    if (isMoneyMetric) return money(value, currencyData.currency);
+                                    if (isPercentMetric) return `${value.toFixed(2)}%`;
+                                    if (isRatioMetric) return `${value.toFixed(2)}x`;
+                                    return value.toLocaleString("en-US", {
+                                      maximumFractionDigits: 2
+                                    });
+                                  };
+
+                                  const delta = change?.delta ?? null;
+                                  const percent = change?.change_percent ?? null;
+                                  const goodMetrics = [
+                                    "revenue", "profit", "roi", "roas",
+                                    "ctr", "cr", "epc"
+                                  ];
+                                  const badMetrics = [
+                                    "spend", "cpm", "cpc", "cpl", "cpa"
+                                  ];
+
+                                  const isGoodMetric = goodMetrics.includes(key);
+                                  const isBadMetric = badMetrics.includes(key);
+                                  const color =
+                                    delta === null || delta === 0 || (!isGoodMetric && !isBadMetric)
+                                      ? "text-[#92929a]"
+                                      : (delta > 0) === isGoodMetric
+                                        ? "text-emerald-400"
+                                        : "text-red-400";
+
+                                  return (
+                                    <tr key={key} className="border-b border-[#29292e]/60">
+                                      <td className="px-3 py-3">{label}</td>
+                                      <td className="px-3 py-3">{formatValue(current)}</td>
+                                      <td className="px-3 py-3">{formatValue(previous)}</td>
+                                      <td className={`px-3 py-3 ${color}`}>
+                                        {delta === null ? "N/A" : `${delta > 0 ? "+" : ""}${formatValue(delta)}`}
+                                      </td>
+                                      <td className={`px-3 py-3 ${color}`}>
+                                        {percent === null
+                                          ? "N/A"
+                                          : `${percent > 0 ? "+" : ""}${percent.toFixed(2)}%`}
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="mb-5 rounded-xl border border-[#29292e] bg-[#151518] p-5">
                   <div className="mb-5">
                     <h3 className="font-semibold">Profit Over Time</h3>
                     <p className="mt-1 text-xs text-[#92929a]">Daily revenue, ad spend and profit · Last 30 days</p>
@@ -289,10 +478,7 @@ export default function AnalyticsPage() {
                   ) : (
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                       {visibleCampaigns.map((campaign) => {
-                        const index = campaigns.findIndex(
-                          (item) => item.id === campaign.id
-                        );
-                        const item = metrics[index];
+                        const item = metrics[campaign.id];
 
                         const advancedMetrics = [
                           { label: "CTR", value: item ? metric(item.ctr, "%") : "N/A" },
@@ -344,8 +530,7 @@ export default function AnalyticsPage() {
                     <>
                       <div className="space-y-3 lg:hidden">
                         {visibleCampaigns.map((campaign) => {
-                          const index = campaigns.findIndex((item) => item.id === campaign.id);
-                          const item = metrics[index];
+                          const item = metrics[campaign.id];
 
                           return (
                             <div key={campaign.id} className="rounded-lg border border-[#29292e] bg-[#101012] p-4">
@@ -403,8 +588,7 @@ export default function AnalyticsPage() {
                           </thead>
                           <tbody className="divide-y divide-[#29292e]">
                             {visibleCampaigns.map((campaign) => {
-                              const index = campaigns.findIndex((item) => item.id === campaign.id);
-                              const item = metrics[index];
+                              const item = metrics[campaign.id];
 
                               return (
                                 <tr key={campaign.id}>

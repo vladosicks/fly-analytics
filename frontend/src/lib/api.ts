@@ -336,3 +336,51 @@ export async function deleteCampaignStat(
     }
   );
 }
+
+export interface PeriodComparisonMetrics {
+  impressions: number;
+  clicks: number;
+  leads: number;
+  conversions: number;
+  spend: number;
+  revenue: number;
+  profit: number;
+  roi: number | null;
+  roas: number | null;
+  ctr: number | null;
+  cpm: number | null;
+  cpc: number | null;
+  cpl: number | null;
+  cpa: number | null;
+  cr: number | null;
+  epc: number | null;
+}
+
+export interface PeriodComparisonChange {
+  delta: number | null;
+  change_percent: number | null;
+}
+
+export interface PeriodComparisonCurrencyData {
+  currency: string;
+  current: PeriodComparisonMetrics;
+  previous: PeriodComparisonMetrics;
+  changes: Record<string, PeriodComparisonChange>;
+}
+
+export interface PeriodComparisonResponse {
+  date_from: string;
+  date_to: string;
+  previous_date_from: string;
+  previous_date_to: string;
+  data: PeriodComparisonCurrencyData[];
+}
+
+export function getPeriodComparison(
+  dateFrom: string,
+  dateTo: string
+): Promise<PeriodComparisonResponse> {
+  return apiFetch<PeriodComparisonResponse>(
+    `/api/v1/analytics/period-comparison/?date_from=${dateFrom}&date_to=${dateTo}`
+  );
+}

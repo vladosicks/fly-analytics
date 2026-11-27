@@ -9,7 +9,7 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_user_id
 from app.models.campaign import Campaign
 from app.models.campaign_stat import CampaignStat
-from app.services.analytics import calculate_analytics
+from app.services.analytics import calculate_analytics, round_value
 
 router = APIRouter(
     prefix="/campaigns/{campaign_id}/analytics",
@@ -186,5 +186,138 @@ async def get_geo_performance(
     return {
         "date_from": date_from.isoformat() if date_from else None,
         "date_to": date_to.isoformat() if date_to else None,
+        "data": data,
+    }
+
+
+@dashboard_router.get("/period-comparison/")
+async def get_period_comparison(
+    date_from: date,
+    date_to: date,
+    db: AsyncSession = Depends(get_db),
+    user_id: uuid.UUID = Depends(get_current_user_id),
+):
+    from decimal import Decimal
+
+    if date_from > date_to:
+        raise HTTPException(
+            status_code=422,
+            detail="date_from cannot be later than date_to",
+        )
+
+    period_days = (date_to - date_from).days + 1
+    previous_to = date_from - timedelta(days=1)
+    previous_from = previous_to - timedelta(days=period_days - 1)
+
+    async def fetch_period(start: date, end: date):
+        query = (
+            select(
+                Campaign.currency.label("currency"),
+                func.coalesce(func.sum(CampaignStat.impressions), 0).label("impressions"),
+                func.coalesce(func.sum(CampaignStat.clicks), 0).label("clicks"),
+                func.coalesce(func.sum(CampaignStat.leads), 0).label("leads"),
+                func.coalesce(func.sum(CampaignStat.conversions), 0).label("conversions"),
+                func.coalesce(func.sum(CampaignStat.spend), 0).label("spend"),
+                func.coalesce(func.sum(CampaignStat.revenue), 0).label("revenue"),
+            )
+            .join(Campaign, Campaign.id == CampaignStat.campaign_id)
+            .where(
+                Campaign.user_id == user_id,
+                CampaignStat.stat_date >= start,
+                CampaignStat.stat_date <= end,
+            )
+            .group_by(Campaign.currency)
+        )
+
+        result = await db.execute(query)
+        return {
+            row.currency: calculate_analytics(
+                impressions=int(row.impressions),
+                clicks=int(row.clicks),
+                leads=int(row.leads),
+                conversions=int(row.conversions),
+                spend=row.spend,
+                revenue=row.revenue,
+            )
+            for row in result.all()
+        }
+
+    current_data = await fetch_period(date_from, date_to)
+    previous_data = await fetch_period(previous_from, previous_to)
+
+    currencies = sorted(set(current_data) | set(previous_data))
+    metric_keys = [
+        "impressions",
+        "clicks",
+        "leads",
+        "conversions",
+        "spend",
+        "revenue",
+        "profit",
+        "roi",
+        "roas",
+        "ctr",
+        "cpm",
+        "cpc",
+        "cpl",
+        "cpa",
+        "cr",
+        "epc",
+    ]
+
+    data = []
+
+    for currency in currencies:
+        current = current_data.get(currency)
+        previous = previous_data.get(currency)
+
+        if current is None:
+            current = calculate_analytics()
+
+        if previous is None:
+            previous = calculate_analytics()
+
+        changes = {}
+
+        for key in metric_keys:
+            current_value = current.get(key)
+            previous_value = previous.get(key)
+
+            if current_value is None or previous_value is None:
+                changes[key] = {
+                    "delta": None,
+                    "change_percent": None,
+                }
+                continue
+
+            current_decimal = Decimal(str(current_value))
+            previous_decimal = Decimal(str(previous_value))
+            delta = current_decimal - previous_decimal
+
+            change_percent = (
+                (delta / abs(previous_decimal)) * Decimal(100)
+                if previous_decimal != 0
+                else None
+            )
+
+            changes[key] = {
+                "delta": round_value(delta),
+                "change_percent": round_value(change_percent),
+            }
+
+        data.append(
+            {
+                "currency": currency,
+                "current": current,
+                "previous": previous,
+                "changes": changes,
+            }
+        )
+
+    return {
+        "date_from": date_from.isoformat(),
+        "date_to": date_to.isoformat(),
+        "previous_date_from": previous_from.isoformat(),
+        "previous_date_to": previous_to.isoformat(),
         "data": data,
     }

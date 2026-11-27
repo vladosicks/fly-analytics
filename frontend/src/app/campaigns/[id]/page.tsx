@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import UserMenu from "@/components/user-menu";
@@ -67,9 +67,45 @@ export default function CampaignDetailsPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const loadData = useCallback(async () => {
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const [campaignData, statsData] = await Promise.all([
+          getCampaign(campaignId),
+          getCampaignStats(campaignId),
+        ]);
+
+        if (cancelled) return;
+
+        setError("");
+        setCampaign(campaignData);
+        setStats(
+          [...statsData].sort((a, b) =>
+            b.stat_date.localeCompare(a.stat_date)
+          )
+        );
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Failed to load campaign."
+          );
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [campaignId]);
+
+  async function refreshData() {
     try {
-      setError("");
       const [campaignData, statsData] = await Promise.all([
         getCampaign(campaignId),
         getCampaignStats(campaignId),
@@ -85,14 +121,8 @@ export default function CampaignDetailsPage() {
       setError(
         err instanceof Error ? err.message : "Failed to load campaign."
       );
-    } finally {
-      setLoading(false);
     }
-  }, [campaignId]);
-
-  useEffect(() => {
-    void loadData();
-  }, [loadData]);
+  }
 
   const totals = useMemo(
     () =>
@@ -177,7 +207,7 @@ export default function CampaignDetailsPage() {
 
       setEditingId(null);
       setForm(emptyForm());
-      await loadData();
+      await refreshData();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to save statistics."
@@ -197,7 +227,7 @@ export default function CampaignDetailsPage() {
       await deleteCampaignStat(campaignId, statId);
       if (editingId === statId) cancelEditing();
       setSuccess("Statistics deleted successfully.");
-      await loadData();
+      await refreshData();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to delete statistics."

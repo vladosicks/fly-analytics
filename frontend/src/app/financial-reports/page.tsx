@@ -1,6 +1,8 @@
 
 "use client";
 
+import Link from "next/link";
+
 import { useEffect, useMemo, useState } from "react";
 import UserMenu from "@/components/user-menu";
 import {
@@ -166,8 +168,6 @@ export default function FinancialReportsPage() {
         }
 
         if (dateFrom && dateTo && dateFrom > dateTo) {
-            setError("Start date cannot be later than end date.");
-            setLoading(false);
             return;
         }
 
@@ -330,12 +330,12 @@ export default function FinancialReportsPage() {
                             WORKSPACE
                         </p>
                         <nav className="space-y-2">
-                            <a href="/" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+                            <Link href="/" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                                 ◫ Overview
-                            </a>
-                            <a href="/campaigns" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
+                            </Link>
+                            <Link href="/campaigns" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                                 ▤ Campaigns
-                            </a>
+                            </Link>
                             <a href="/analytics" className="block rounded-lg px-4 py-3 text-sm text-[#92929a] hover:bg-[#19191c]">
                                 ⌁ Analytics
                             </a>

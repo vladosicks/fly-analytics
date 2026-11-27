@@ -20,10 +20,6 @@ function AuthGuardContent({
   const [status, setStatus] = useState<AuthStatus>("loading");
 
   useEffect(() => {
-    if (isPublicRoute) {
-      setStatus("unauthenticated");
-      return;
-    }
 
     let cancelled = false;
 

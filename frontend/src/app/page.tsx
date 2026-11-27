@@ -19,12 +19,6 @@ const navigation = [
   { label: "GEO Performance", icon: "◎", href: "/geo-performance", active: false },
   { label: "Financial Reports", icon: "▥", href: "/financial-reports", active: false },];
 
-const campaigns = [
-  { name: "Nutra | Germany", network: "Meta Ads", geo: "DE", spend: "$1,240.00", revenue: "$2,180.00", profit: "+$940.00", roi: "75.8%", status: "Active" },
-  { name: "Dating | Brazil", network: "TikTok Ads", geo: "BR", spend: "$860.00", revenue: "$1,120.00", profit: "+$260.00", roi: "30.2%", status: "Active" },
-  { name: "Sweepstakes | Poland", network: "Meta Ads", geo: "PL", spend: "$640.00", revenue: "$420.00", profit: "-$220.00", roi: "-34.4%", status: "Paused" },
-  { name: "Nutra | Spain", network: "Google Ads", geo: "ES", spend: "$520.00", revenue: "$890.00", profit: "+$370.00", roi: "71.1%", status: "Active" },
-];
 
 function Icon({ children }: { children: React.ReactNode }) {
   return (
